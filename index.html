@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KCPH — Staff Grievance Platform · HR.10</title>
+<style>
+/* ── TOKENS ── */
+:root {
+  --blue:     #1F4E79;
+  --blue2:    #2775B2;
+  --blue-lt:  #DBECf8;
+  --green:    #1A7F4E;
+  --green-lt: #D4EDDA;
+  --red:      #B71C1C;
+  --red-lt:   #FDECEA;
+  --amber:    #C45F0A;
+  --amber-lt: #FEF0E3;
+  --bg:       #F2F6FB;
+  --border:   #C9D8E8;
+  --text:     #1A2535;
+  --muted:    #5A6A7E;
+  --white:    #FFFFFF;
+  --radius:   8px;
+  --shadow:   0 2px 14px rgba(31,78,121,.10);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ── HEADER ── */
+.hdr{background:var(--blue);color:#fff;padding:0 20px;height:54px;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 2px 8px rgba(0,0,0,.25);position:sticky;top:0;z-index:50;}
+.hdr-l{display:flex;align-items:center;gap:10px;}
+.hdr-badge{background:#2775B2;font-size:12px;font-weight:700;padding:3px 9px;border-radius:4px;letter-spacing:.5px;}
+.hdr-title{font-size:14px;font-weight:700;}
+.hdr-sub{font-size:11px;opacity:.7;}
+.hdr-r{display:flex;align-items:center;gap:8px;font-size:12px;opacity:.85;}
+.btn-out{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
+  color:#fff;padding:4px 12px;border-radius:4px;cursor:pointer;font-size:11px;}
+.btn-out:hover{background:rgba(255,255,255,.25);}
+
+/* ── WRAPPER ── */
+.wrap{max-width:960px;margin:0 auto;padding:24px 16px 60px;}
+
+/* ── CARDS ── */
+.card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 24px;margin-bottom:18px;}
+.card-hd{font-size:14px;font-weight:700;color:var(--blue);margin-bottom:16px;
+  padding-bottom:10px;border-bottom:2px solid var(--blue-lt);}
+
+/* ── FORM ELEMENTS ── */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.fg3{grid-template-columns:1fr 1fr 1fr;}
+.fg1{grid-template-columns:1fr;}
+.f2{grid-column:span 2;}
+.fld{display:flex;flex-direction:column;gap:4px;}
+label{font-size:11px;font-weight:700;color:var(--blue);}
+label .km{font-weight:400;color:var(--muted);margin-left:3px;}
+input,select,textarea{border:1.5px solid var(--border);border-radius:5px;
+  padding:8px 10px;font-size:13px;font-family:inherit;color:var(--text);width:100%;
+  background:#fff;transition:border .12s;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue2);
+  box-shadow:0 0 0 3px rgba(39,117,178,.12);}
+textarea{resize:vertical;min-height:80px;}
+
+/* ── BUTTONS ── */
+.btn{padding:9px 20px;border-radius:5px;border:none;font-size:13px;font-weight:600;
+  cursor:pointer;transition:opacity .12s;display:inline-flex;align-items:center;gap:6px;}
+.btn:hover{opacity:.88;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.btn-p{background:var(--blue);color:#fff;}
+.btn-s{background:var(--bg);color:var(--blue);border:1.5px solid var(--border);}
+.btn-g{background:var(--green);color:#fff;}
+.btn-a{background:var(--amber);color:#fff;}
+
+/* ── BADGES ── */
+.bdg{display:inline-block;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:600;white-space:nowrap;}
+.bdg-sub{background:#E3F2FD;color:#1565C0;}
+.bdg-ack{background:#FFF8E1;color:#F57F17;}
+.bdg-inv{background:#EDE7F6;color:#4527A0;}
+.bdg-dec{background:var(--green-lt);color:var(--green);}
+.bdg-app{background:var(--amber-lt);color:var(--amber);}
+.bdg-clo{background:#ECEFF1;color:#546E7A;}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:4px;margin-bottom:18px;flex-wrap:wrap;}
+.tab{padding:7px 16px;border-radius:18px;border:1.5px solid var(--border);
+  background:var(--white);color:var(--muted);cursor:pointer;font-size:12px;font-weight:600;}
+.tab.on{background:var(--blue);color:#fff;border-color:var(--blue);}
+.tab:hover:not(.on){background:var(--blue-lt);color:var(--blue);border-color:var(--blue2);}
+
+/* ── STATS ── */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:18px;}
+.stat{background:var(--white);border-radius:var(--radius);padding:14px 18px;
+  box-shadow:var(--shadow);border-left:4px solid var(--blue);}
+.stat.g{border-color:var(--green);}
+.stat.a{border-color:var(--amber);}
+.stat.r{border-color:var(--red);}
+.stat .n{font-size:26px;font-weight:700;color:var(--blue);}
+.stat.g .n{color:var(--green);}
+.stat.a .n{color:var(--amber);}
+.stat.r .n{color:var(--red);}
+.stat .l{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* ── TABLE ── */
+.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.tbl th{background:var(--blue);color:#fff;padding:9px 11px;text-align:left;font-size:11px;}
+.tbl td{padding:9px 11px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.tbl tr:hover td{background:var(--blue-lt);cursor:pointer;}
+.tbl tr:last-child td{border-bottom:none;}
+.no-rows{text-align:center;color:var(--muted);padding:28px;font-size:12px;}
+
+/* ── MODAL ── */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);
+  z-index:200;align-items:center;justify-content:center;padding:16px;}
+.ov.on{display:flex;}
+.modal{background:#fff;border-radius:10px;max-width:720px;width:100%;
+  max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.modal-hd{background:var(--blue);color:#fff;padding:14px 20px;
+  border-radius:10px 10px 0 0;display:flex;justify-content:space-between;align-items:center;
+  position:sticky;top:0;z-index:1;}
+.modal-hd h3{font-size:13px;font-weight:700;}
+.modal-x{background:rgba(255,255,255,.2);border:none;color:#fff;
+  width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:15px;}
+.modal-bd{padding:20px;}
+
+/* ── LOGIN ── */
+.login-bg{min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--blue) 0%,#0C2F54 100%);}
+.login-box{background:#fff;border-radius:12px;padding:36px 32px;
+  width:100%;max-width:400px;box-shadow:0 24px 80px rgba(0,0,0,.35);}
+.login-logo{text-align:center;margin-bottom:24px;}
+.login-badge{background:var(--blue);color:#fff;font-size:12px;font-weight:700;
+  padding:5px 13px;border-radius:5px;letter-spacing:1px;}
+.login-logo h2{margin-top:10px;color:var(--blue);font-size:17px;font-weight:700;}
+.login-logo p{color:var(--muted);font-size:11px;margin-top:3px;}
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:18px;}
+.role-btn{padding:12px 8px;border:2px solid var(--border);border-radius:7px;
+  background:#fff;cursor:pointer;text-align:center;transition:all .12s;}
+.role-btn:hover{border-color:var(--blue2);background:var(--blue-lt);}
+.role-btn.on{border-color:var(--blue);background:var(--blue);color:#fff;}
+.role-btn .ri{font-size:20px;display:block;margin-bottom:3px;}
+.role-btn .rn{font-weight:700;font-size:12px;}
+.role-btn .rk{font-size:10px;opacity:.7;}
+
+/* ── ALERTS ── */
+.al{padding:10px 14px;border-radius:6px;font-size:12px;margin-bottom:12px;}
+.al-e{background:var(--red-lt);color:var(--red);}
+.al-s{background:var(--green-lt);color:var(--green);}
+.al-i{background:var(--blue-lt);color:var(--blue);}
+.al-w{background:var(--amber-lt);color:var(--amber);}
+
+/* ── DIVIDER ── */
+.div-sec{font-size:10px;font-weight:700;color:var(--blue2);text-transform:uppercase;
+  letter-spacing:1px;border-bottom:1.5px solid var(--blue-lt);padding-bottom:5px;margin:18px 0 12px;}
+
+/* ── TRACKING CHIP ── */
+.chip{background:var(--blue-lt);color:var(--blue);font-weight:700;
+  font-size:12px;padding:4px 12px;border-radius:14px;display:inline-block;}
+
+/* ── SPINNER ── */
+.spin{border:2px solid var(--border);border-top-color:var(--blue);
+  border-radius:50%;width:16px;height:16px;animation:sp .7s linear infinite;display:inline-block;}
+@keyframes sp{to{transform:rotate(360deg);}}
+
+/* ── TIMELINE ── */
+.tl{list-style:none;}
+.tl li{display:flex;gap:10px;padding-bottom:14px;position:relative;}
+.tl li::before{content:"";position:absolute;left:11px;top:22px;
+  width:2px;background:var(--border);bottom:0;}
+.tl li:last-child::before{display:none;}
+.tl-dot{width:24px;height:24px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:11px;z-index:1;}
+.tl-dot.done{background:var(--green);color:#fff;}
+.tl-dot.cur{background:var(--blue);color:#fff;}
+.tl-dot.pend{background:var(--border);color:var(--muted);}
+.tl-lbl{font-size:12px;font-weight:600;padding-top:4px;}
+.tl-dt{font-size:10px;color:var(--muted);}
+
+.hidden{display:none!important;}
+@media(max-width:600px){.fg,.fg3{grid-template-columns:1fr;}.f2{grid-column:span 1;}.stats{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER (hidden until login) ══ -->
+<header class="hdr hidden" id="hdr">
+  <div class="hdr-l">
+    <div class="hdr-badge">KCPH</div>
+    <div><div class="hdr-title">Staff Grievance Platform</div>
+      <div class="hdr-sub">CHAS HR.10 · Kampong Chhnang Provincial Hospital</div></div>
+  </div>
+  <div class="hdr-r">
+    <span id="hdr-who"></span>
+    <button class="btn-out" onclick="logout()">↩ Sign out</button>
+  </div>
+</header>
+
+<!-- ══ LOGIN ══ -->
+<div class="login-bg" id="pg-login">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-badge">KCPH · HR.10</div>
+      <h2>Grievance Management</h2>
+      <p>ប្រព័ន្ធគ្រប់គ្រងការដាក់ពាក្យបណ្តឹង</p>
+    </div>
+    <div id="login-err" class="al al-e hidden"></div>
+
+    <div id="step-roles">
+      <p style="font-size:11px;color:var(--muted);margin-bottom:10px;font-weight:700;">Select your role · ជ្រើសតួនាទី</p>
+      <div class="role-grid">
+        <button class="role-btn" onclick="pickRole('staff')">
+          <span class="ri">👤</span><div class="rn">Staff</div><div class="rk">បុគ្គលិក</div>
+        </button>
+        <button class="role-btn" onclick="pickRole('admin')">
+          <span class="ri">🗂️</span><div class="rn">Admin Officer</div><div class="rk">មន្ត្រីរដ្ឋបាល</div>
+        </button>
+        <button class="role-btn" onclick="pickRole('committee')">
+          <span class="ri">⚖️</span><div class="rn">Committee</div><div class="rk">គណៈកម្មការ</div>
+        </button>
+        <button class="role-btn" onclick="pickRole('director')">
+          <span class="ri">🏛️</span><div class="rn">Director</div><div class="rk">នាយក</div>
+        </button>
+      </div>
+      <p style="text-align:center;font-size:11px;color:var(--muted);">
+        Staff: <a href="#" style="color:var(--blue2);" onclick="enterStaff();return false;">Submit or track without password →</a>
+      </p>
+    </div>
+
+    <div id="step-pw" class="hidden">
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">Password for <strong id="pw-role-lbl"></strong></p>
+      <div class="fld" style="margin-bottom:12px;">
+        <label>Password · ពាក្យសម្ងាត់</label>
+        <input type="password" id="pw-in" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="btn btn-p" style="width:100%" onclick="doLogin()">Sign In · ចូល</button>
+      <button class="btn btn-s" style="width:100%;margin-top:8px" onclick="backRoles()">← Back</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ STAFF VIEW ══ -->
+<div id="pg-staff" class="hidden">
+<div class="wrap">
+  <div class="tabs">
+    <button class="tab on" onclick="staffTab('sub',this)">📝 Submit Grievance · ដាក់ពាក្យ</button>
+    <button class="tab" onclick="staffTab('trk',this)">🔍 Track My Case · តាមដាន</button>
+  </div>
+
+  <!-- SUBMIT -->
+  <div id="staff-sub">
+    <div class="card">
+      <div class="card-hd">📋 Staff Grievance Submission · ទម្រង់ KCPH-HR.10-F01</div>
+      <div id="sub-al" class="hidden"></div>
+
+      <div class="div-sec">A · Your Information · ព័ត៌មានរបស់អ្នក</div>
+      <div class="fg">
+        <div class="fld"><label>Full Name <span class="km">គោត្តនាម-នាម *</span></label>
+          <input id="s-name" placeholder="Chan Dara"></div>
+        <div class="fld"><label>Position <span class="km">មុខតំណែង *</span></label>
+          <input id="s-pos" placeholder="Senior Nurse"></div>
+        <div class="fld"><label>Department <span class="km">នាយកដ្ឋាន *</span></label>
+          <select id="s-dept">
+            <option value="">— Select —</option>
+            <option>Emergency Department</option><option>Internal Medicine</option>
+            <option>Surgery</option><option>Obstetrics &amp; Gynecology</option>
+            <option>Pediatrics</option><option>ICU</option><option>Laboratory</option>
+            <option>Radiology / Imaging</option><option>Pharmacy</option>
+            <option>Blood Bank</option><option>Nursing Division</option>
+            <option>Administration Office</option><option>Technical Office</option>
+            <option>Finance Office</option><option>IPC Department</option>
+            <option>MCH / Maternity</option><option>Outpatient Department</option>
+            <option>Other</option>
+          </select></div>
+        <div class="fld"><label>Contact Phone / Email <span class="km">ទំនាក់ទំនង</span></label>
+          <input id="s-contact" placeholder="012 XXX XXX"></div>
+      </div>
+      <label style="display:flex;align-items:center;gap:7px;margin-top:10px;font-size:12px;cursor:pointer;font-weight:400;color:var(--text);">
+        <input type="checkbox" id="s-anon" style="width:auto;"> Remain anonymous · ប益នាម
+      </label>
+
+      <div class="div-sec">B · Grievance Details · ព័ត៌មានបណ្តឹង</div>
+      <div class="fg">
+        <div class="fld"><label>Date of Incident <span class="km">កាលបរិច្ឆេទ *</span></label>
+          <input type="date" id="s-date"></div>
+        <div class="fld"><label>Nature of Grievance <span class="km">ប្រភេទ *</span></label>
+          <select id="s-nature">
+            <option value="">— Select —</option>
+            <option>Workplace Conflict</option><option>Discrimination / Harassment</option>
+            <option>Unfair Treatment</option><option>Unsafe Work Condition</option>
+            <option>Breach of Rights</option><option>Salary / Benefits Dispute</option>
+            <option>Disciplinary Action Dispute</option><option>Other</option>
+          </select></div>
+        <div class="fld f2"><label>Persons Involved <span class="km">អ្នកទាក់ទង (បើមាន)</span></label>
+          <input id="s-persons" placeholder="Name, position, department"></div>
+        <div class="fld f2"><label>Description of Grievance <span class="km">ការពិពណ៌នា *</span></label>
+          <textarea id="s-desc" rows="5" placeholder="Describe what happened, when, and where…"></textarea></div>
+        <div class="fld f2"><label>Steps Already Taken <span class="km">ដំណើរការដោះស្រាយ</span></label>
+          <textarea id="s-steps" rows="3" placeholder="Did you discuss with your supervisor?"></textarea></div>
+        <div class="fld f2"><label>Desired Outcome <span class="km">លទ្ធផលចង់ទទួល *</span></label>
+          <textarea id="s-outcome" rows="3" placeholder="What resolution are you seeking?"></textarea></div>
+      </div>
+
+      <div class="al al-i" style="margin-top:14px;font-size:11px;">
+        🔒 Your submission is confidential. No retaliation is permitted under CHAS HR.10.
+      </div>
+      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn btn-p" id="sub-btn" onclick="submitGrievance()">📤 Submit · ដាក់ពាក្យ</button>
+        <button class="btn btn-s" onclick="clearForm()">🗑 Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRACK -->
+  <div id="staff-trk" class="hidden">
+    <div class="card">
+      <div class="card-hd">🔍 Track Your Case · តាមដានករណី</div>
+      <div class="fg">
+        <div class="fld">
+          <label>Tracking Number <span class="km">លេខតាមដាន *</span></label>
+          <input id="trk-num" placeholder="GRV-2026-001" style="text-transform:uppercase;"
+            onkeydown="if(event.key==='Enter')trackCase()">
+        </div>
+        <div class="fld" style="justify-content:flex-end;padding-top:17px;">
+          <button class="btn btn-p" onclick="trackCase()">🔍 Track</button>
+        </div>
+      </div>
+      <div id="trk-result" style="margin-top:14px;"></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ ADMIN VIEW ══ -->
+<div id="pg-admin" class="hidden">
+<div class="wrap">
+  <div id="admin-al" class="hidden"></div>
+  <div class="stats" id="admin-stats"></div>
+  <div class="tabs">
+    <button class="tab on" onclick="adminTab('list',this)">📁 All Cases</button>
+    <button class="tab" onclick="adminTab('reg',this)">➕ Register Walk-in</button>
+  </div>
+
+  <div id="admin-list">
+    <div class="card">
+      <div class="card-hd">📁 Grievance Case Register</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+        <input id="adm-search" placeholder="🔍 Search name, tracking, dept…" style="flex:1;min-width:160px;" oninput="renderAdm()">
+        <select id="adm-status" onchange="renderAdm()" style="min-width:150px;">
+          <option value="">All Status</option>
+          <option>Submitted</option><option>Acknowledged</option>
+          <option>Under Investigation</option><option>Decision Issued</option>
+          <option>Appealed</option><option>Closed</option>
+        </select>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="tbl">
+          <thead><tr>
+            <th>Tracking No</th><th>Date</th><th>Grievant / Dept</th>
+            <th>Nature</th><th>Status</th><th></th>
+          </tr></thead>
+          <tbody id="adm-body"><tr><td colspan="6" class="no-rows">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="admin-reg" class="hidden">
+    <div class="card">
+      <div class="card-hd">➕ Register Walk-in / Paper Grievance</div>
+      <div class="fg">
+        <div class="fld"><label>Grievant Name</label><input id="r-name"></div>
+        <div class="fld"><label>Position</label><input id="r-pos"></div>
+        <div class="fld"><label>Department</label>
+          <select id="r-dept">
+            <option>Emergency Department</option><option>Internal Medicine</option>
+            <option>Surgery</option><option>Obstetrics &amp; Gynecology</option>
+            <option>Pediatrics</option><option>ICU</option><option>Laboratory</option>
+            <option>Radiology / Imaging</option><option>Pharmacy</option>
+            <option>Blood Bank</option><option>Nursing Division</option>
+            <option>Administration Office</option><option>Technical Office</option>
+            <option>Finance Office</option><option>IPC Department</option>
+            <option>MCH / Maternity</option><option>Outpatient Department</option>
+            <option>Other</option>
+          </select></div>
+        <div class="fld"><label>Date of Incident</label><input type="date" id="r-inc"></div>
+        <div class="fld"><label>Nature</label>
+          <select id="r-nature">
+            <option>Workplace Conflict</option><option>Discrimination / Harassment</option>
+            <option>Unfair Treatment</option><option>Unsafe Work Condition</option>
+            <option>Breach of Rights</option><option>Salary / Benefits Dispute</option>
+            <option>Disciplinary Action Dispute</option><option>Other</option>
+          </select></div>
+        <div class="fld f2"><label>Description</label><textarea id="r-desc" rows="4"></textarea></div>
+        <div class="fld f2"><label>Desired Outcome</label><textarea id="r-out" rows="3"></textarea></div>
+      </div>
+      <button class="btn btn-p" style="margin-top:12px" onclick="regWalkin()">➕ Register Case</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ COMMITTEE VIEW ══ -->
+<div id="pg-committee" class="hidden">
+<div class="wrap">
+  <div class="stats" id="com-stats"></div>
+  <div class="card">
+    <div class="card-hd">⚖️ Cases Assigned for Investigation</div>
+    <div style="overflow-x:auto;">
+      <table class="tbl">
+        <thead><tr>
+          <th>Tracking No</th><th>Grievant / Dept</th>
+          <th>Nature</th><th>Received</th><th>Status</th><th></th>
+        </tr></thead>
+        <tbody id="com-body"><tr><td colspan="6" class="no-rows">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ DIRECTOR VIEW ══ -->
+<div id="pg-director" class="hidden">
+<div class="wrap">
+  <div class="stats" id="dir-stats"></div>
+  <div class="tabs">
+    <button class="tab on" onclick="dirTab('app',this)">🚨 Appeals</button>
+    <button class="tab" onclick="dirTab('all',this)">📊 All Cases</button>
+  </div>
+  <div id="dir-app">
+    <div class="card">
+      <div class="card-hd">🚨 Appeals Awaiting Director Decision</div>
+      <div style="overflow-x:auto;">
+        <table class="tbl">
+          <thead><tr>
+            <th>Tracking No</th><th>Grievant / Dept</th><th>Nature</th>
+            <th>Appeal Date</th><th>Status</th><th></th>
+          </tr></thead>
+          <tbody id="dir-app-body"><tr><td colspan="6" class="no-rows">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div id="dir-all" class="hidden">
+    <div class="card">
+      <div class="card-hd">📊 Full Case Register</div>
+      <div style="overflow-x:auto;">
+        <table class="tbl">
+          <thead><tr>
+            <th>Tracking No</th><th>Date</th><th>Grievant / Dept</th>
+            <th>Nature</th><th>Status</th><th></th>
+          </tr></thead>
+          <tbody id="dir-all-body"><tr><td colspan="6" class="no-rows">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══ CASE MODAL ══ -->
+<div class="ov" id="case-ov">
+  <div class="modal">
+    <div class="modal-hd">
+      <h3 id="modal-ttl">Case Details</h3>
+      <button class="modal-x" onclick="closeMod()">✕</button>
+    </div>
+    <div class="modal-bd" id="modal-bd"></div>
+  </div>
+</div>
+
+<!-- ══ SUCCESS MODAL ══ -->
+<div class="ov" id="ok-ov">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-hd" style="background:var(--green);">
+      <h3>✅ Grievance Submitted</h3>
+      <button class="modal-x" onclick="closeOk()">✕</button>
+    </div>
+    <div class="modal-bd" style="text-align:center;padding:28px;">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:16px;">
+        Your grievance has been received. Please save your tracking number:
+      </div>
+      <div class="chip" id="ok-num" style="font-size:18px;padding:10px 24px;"></div>
+      <div style="margin-top:16px;font-size:11px;color:var(--muted);">
+        Acknowledgement within 2 working days.<br>Resolution within 15 working days.
+      </div>
+      <button class="btn btn-g" style="margin-top:20px;width:100%;" onclick="closeOk()">Done</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// CONFIG — set your GAS URL after deploying
+// ═══════════════════════════════════════════════════
+const GAS = 'https://script.google.com/macros/s/AKfycbxCJw-WwxFDh3GwOwR39ZjE8X0JHe0UBYqq8OdLMtQv0ei8J8c9d_fOUuxkXN9iTKBC/exec';
+
+// Role passwords (plain — swap to SHA-256 if preferred)
+const PASSWORDS = {
+  admin:     'KCPH@Grievance2026',
+  committee: 'KCPH@Committee2026',
+  director:  'KCPH@Director2026'
+};
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+let role = null, selRole = null, cases = [];
+
+// ═══════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════
+const $  = id => document.getElementById(id);
+const gv = id => ($( id)||{}).value?.trim()||'';
+const today = () => new Date().toISOString().split('T')[0];
+const genTrk = () => `GRV-${new Date().getFullYear()}-${String(Date.now()).slice(-5)}`;
+
+function badge(s){
+  const m={Submitted:'sub',Acknowledged:'ack','Under Investigation':'inv',
+    'Decision Issued':'dec',Appealed:'app',Closed:'clo'};
+  return `<span class="bdg bdg-${m[s]||'sub'}">${s||'Submitted'}</span>`;
+}
+
+function showAl(id, type, msg){
+  const el=$(id); if(!el)return;
+  el.className=`al al-${type}`; el.textContent=msg; el.classList.remove('hidden');
+  if(type!=='e') setTimeout(()=>el.classList.add('hidden'),5000);
+}
+
+// ═══════════════════════════════════════════════════
+// GAS CALLS — standard KCPH pattern
+// ═══════════════════════════════════════════════════
+function gasGet(params){
+  const url = GAS+'?'+new URLSearchParams(params);
+  return fetch(url).then(r=>r.json()).catch(()=>({error:'network'}));
+}
+
+function gasPost(data){
+  // Standard KCPH: text/plain + no-cors for writes
+  return fetch(GAS,{
+    method:'POST', mode:'no-cors',
+    headers:{'Content-Type':'text/plain'},
+    body: JSON.stringify(data)
+  }).then(()=>({ok:true})).catch(()=>({error:'network'}));
+}
+
+// ═══════════════════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════════════════
+function pickRole(r){
+  if(r==='staff'){enterStaff();return;}
+  selRole=r;
+  $('step-roles').classList.add('hidden');
+  $('step-pw').classList.remove('hidden');
+  $('pw-role-lbl').textContent={admin:'Admin Officer',committee:'Committee',director:'Director'}[r];
+  $('pw-in').value='';
+  setTimeout(()=>$('pw-in').focus(),80);
+}
+
+function backRoles(){
+  $('step-pw').classList.add('hidden');
+  $('step-roles').classList.remove('hidden');
+  $('login-err').classList.add('hidden');
+}
+
+function enterStaff(){ role='staff'; launch(); }
+
+function doLogin(){
+  const pw=$('pw-in').value.trim();
+  if(!pw)return;
+  if(pw===PASSWORDS[selRole]){
+    role=selRole;
+    $('login-err').classList.add('hidden');
+    launch();
+  } else {
+    const e=$('login-err');
+    e.className='al al-e'; e.textContent='❌ Incorrect password. Try again.';
+    e.classList.remove('hidden');
+  }
+}
+
+function launch(){
+  $('pg-login').classList.add('hidden');
+  $('hdr').classList.remove('hidden');
+  const labels={staff:'Staff Member · បុគ្គលិក',
+    admin:'Admin Officer (Mr. Chheng Sokhim)',
+    committee:'Grievance Committee',
+    director:'Hospital Director (Dr. Tum Sambath)'};
+  $('hdr-who').textContent='👤 '+labels[role];
+  document.querySelectorAll('[id^=pg-]').forEach(p=>p.classList.add('hidden'));
+  $('pg-'+role).classList.remove('hidden');
+  if(role!=='staff') loadCases();
+}
+
+function logout(){
+  role=null; selRole=null; cases=[];
+  $('hdr').classList.add('hidden');
+  document.querySelectorAll('[id^=pg-]').forEach(p=>p.classList.add('hidden'));
+  $('pg-login').classList.remove('hidden');
+  $('step-pw').classList.add('hidden');
+  $('step-roles').classList.remove('hidden');
+  $('login-err').classList.add('hidden');
+}
+
+// ═══════════════════════════════════════════════════
+// LOAD CASES
+// ═══════════════════════════════════════════════════
+async function loadCases(){
+  try{
+    const d = await gasGet({action:'getCases'});
+    cases = Array.isArray(d) ? d : (d.cases||[]);
+  }catch(e){ cases=[]; }
+  if(role==='admin')     { renderAdm(); renderStats('admin-stats',cases); }
+  if(role==='committee') { renderCom(); renderStats('com-stats',
+    cases.filter(c=>['Acknowledged','Under Investigation'].includes(c.status))); }
+  if(role==='director')  { renderDir(); renderStats('dir-stats',cases); }
+}
+
+function renderStats(id, data){
+  const total   = data.length;
+  const open    = data.filter(c=>c.status!=='Closed').length;
+  const appeals = data.filter(c=>c.status==='Appealed').length;
+  const overdue = data.filter(c=>{
+    if(!c.submittedDate||c.status==='Closed')return false;
+    return (Date.now()-new Date(c.submittedDate))/86400000>15;
+  }).length;
+  $(id).innerHTML=`
+    <div class="stat"><div class="n">${total}</div><div class="l">Total Cases</div></div>
+    <div class="stat a"><div class="n">${open}</div><div class="l">Open Cases</div></div>
+    <div class="stat r"><div class="n">${overdue}</div><div class="l">Overdue &gt;15d</div></div>
+    <div class="stat g"><div class="n">${appeals}</div><div class="l">Appeals</div></div>`;
+}
+
+// ═══════════════════════════════════════════════════
+// SUBMIT GRIEVANCE
+// ═══════════════════════════════════════════════════
+async function submitGrievance(){
+  const name=gv('s-name'), dept=gv('s-dept'), nature=gv('s-nature'),
+        desc=gv('s-desc'), outcome=gv('s-outcome'), date=gv('s-date');
+  if(!name||!dept||!nature||!desc||!outcome||!date){
+    showAl('sub-al','e','❌ Please fill all required fields (*).');return;
+  }
+  const btn=$('sub-btn');
+  btn.disabled=true; btn.innerHTML='<span class="spin"></span> Submitting…';
+  const trk=genTrk();
+  await gasPost({
+    action:'submit', trackingNo:trk,
+    submittedDate:today(), grievantName:gv('s-name'),
+    position:gv('s-pos'), department:gv('s-dept'),
+    contact:gv('s-contact'),
+    anonymous:$('s-anon').checked?'Yes':'No',
+    incidentDate:date, natureType:nature,
+    personsInvolved:gv('s-persons'), description:desc,
+    stepsTaken:gv('s-steps'), desiredOutcome:outcome,
+    status:'Submitted', lastUpdated:new Date().toISOString()
+  });
+  btn.disabled=false; btn.innerHTML='📤 Submit · ដាក់ពាក្យ';
+  $('ok-num').textContent=trk;
+  $('ok-ov').classList.add('on');
+  clearForm();
+}
+
+function clearForm(){
+  ['s-name','s-pos','s-contact','s-date','s-persons','s-desc','s-steps','s-outcome']
+    .forEach(id=>{const e=$(id);if(e)e.value='';});
+  $('s-dept').value=''; $('s-nature').value='';
+  $('s-anon').checked=false;
+  $('sub-al').classList.add('hidden');
+}
+
+function closeOk(){ $('ok-ov').classList.remove('on'); }
+
+// ═══════════════════════════════════════════════════
+// TRACK CASE
+// ═══════════════════════════════════════════════════
+async function trackCase(){
+  const num=gv('trk-num').toUpperCase();
+  const div=$('trk-result');
+  if(!num){div.innerHTML='<div class="al al-e">Please enter your tracking number.</div>';return;}
+  div.innerHTML='<div style="text-align:center;padding:20px;"><span class="spin"></span></div>';
+  const d=await gasGet({action:'getCase',trackingNo:num});
+  if(!d||d.error||!d.trackingNo){
+    div.innerHTML='<div class="al al-e">❌ Case not found. Check your tracking number.</div>';return;
+  }
+  const steps=['Submitted','Acknowledged','Under Investigation','Decision Issued','Closed'];
+  const ci=steps.indexOf(d.status);
+  div.innerHTML=`
+    <div class="al al-s" style="margin-bottom:14px;">✅ Case found · <strong>${d.trackingNo}</strong></div>
+    <div class="fg" style="margin-bottom:16px;">
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);">TRACKING</div>
+        <span class="chip" style="margin-top:4px;">${d.trackingNo}</span></div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);">STATUS</div>
+        <div style="margin-top:6px;">${badge(d.status)}</div></div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);">DATE SUBMITTED</div>
+        <div style="font-size:12px;margin-top:4px;">${d.submittedDate||'—'}</div></div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);">NATURE</div>
+        <div style="font-size:12px;margin-top:4px;">${d.natureType||'—'}</div></div>
+    </div>
+    <div style="font-weight:700;font-size:12px;color:var(--blue);margin-bottom:10px;">Progress Timeline</div>
+    <ul class="tl">
+      ${steps.map((s,i)=>`<li>
+        <div class="tl-dot ${i<ci?'done':i===ci?'cur':'pend'}">${i<ci?'✓':i===ci?'●':'○'}</div>
+        <div><div class="tl-lbl">${s}</div>
+          ${i===0?`<div class="tl-dt">${d.submittedDate||''}</div>`:''}
+          ${i===3&&d.decisionDate?`<div class="tl-dt">${d.decisionDate}</div>`:''}
+        </div></li>`).join('')}
+    </ul>
+    ${d.status==='Appealed'?`<div class="al al-w" style="margin-top:12px;">⚠️ Your appeal is under review by the Hospital Director.</div>`:''}
+    ${d.directorDecision?`<div class="al al-i" style="margin-top:12px;">📋 Director's final decision has been issued. Contact the Admin Office to collect your copy.</div>`:''}
+  `;
+}
+
+// ═══════════════════════════════════════════════════
+// ADMIN TABLE
+// ═══════════════════════════════════════════════════
+function renderAdm(){
+  const q=(gv('adm-search')||'').toLowerCase();
+  const st=gv('adm-status');
+  let rows=cases.filter(c=>(!q||JSON.stringify(c).toLowerCase().includes(q))&&(!st||c.status===st));
+  const tb=$('adm-body');
+  if(!rows.length){tb.innerHTML=`<tr><td colspan="6" class="no-rows">No cases found.</td></tr>`;return;}
+  tb.innerHTML=rows.map(c=>`<tr onclick="openMod('${c.trackingNo}','admin')">
+    <td><span class="chip" style="font-size:10px;padding:2px 8px;">${c.trackingNo}</span></td>
+    <td style="font-size:11px;">${c.submittedDate||'—'}</td>
+    <td><div style="font-weight:600;font-size:12px;">${c.anonymous==='Yes'?'[Anonymous]':c.grievantName||'—'}</div>
+      <div style="font-size:10px;color:var(--muted);">${c.department||'—'}</div></td>
+    <td style="font-size:11px;">${c.natureType||'—'}</td>
+    <td>${badge(c.status)}</td>
+    <td><button class="btn btn-s" style="padding:3px 9px;font-size:11px;"
+        onclick="event.stopPropagation();openMod('${c.trackingNo}','admin')">Manage</button></td>
+  </tr>`).join('');
+}
+
+async function regWalkin(){
+  const trk=genTrk();
+  await gasPost({
+    action:'submit', trackingNo:trk,
+    submittedDate:today(), grievantName:gv('r-name'),
+    position:gv('r-pos'), department:gv('r-dept'),
+    incidentDate:gv('r-inc'), natureType:gv('r-nature'),
+    description:gv('r-desc'), desiredOutcome:gv('r-out'),
+    anonymous:'No', status:'Submitted', lastUpdated:new Date().toISOString()
+  });
+  showAl('admin-al','s',`✅ Case registered: ${trk}`);
+  loadCases();
+}
+
+// ═══════════════════════════════════════════════════
+// COMMITTEE TABLE
+// ═══════════════════════════════════════════════════
+function renderCom(){
+  const rows=cases.filter(c=>['Acknowledged','Under Investigation'].includes(c.status));
+  const tb=$('com-body');
+  if(!rows.length){tb.innerHTML=`<tr><td colspan="6" class="no-rows">No assigned cases.</td></tr>`;return;}
+  tb.innerHTML=rows.map(c=>`<tr>
+    <td><span class="chip" style="font-size:10px;padding:2px 8px;">${c.trackingNo}</span></td>
+    <td><div style="font-weight:600;font-size:12px;">${c.anonymous==='Yes'?'[Anonymous]':c.grievantName||'—'}</div>
+      <div style="font-size:10px;color:var(--muted);">${c.department||'—'}</div></td>
+    <td style="font-size:11px;">${c.natureType||'—'}</td>
+    <td style="font-size:11px;">${c.submittedDate||'—'}</td>
+    <td>${badge(c.status)}</td>
+    <td><button class="btn btn-s" style="padding:3px 9px;font-size:11px;"
+        onclick="openMod('${c.trackingNo}','committee')">Investigate</button></td>
+  </tr>`).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// DIRECTOR TABLES
+// ═══════════════════════════════════════════════════
+function renderDir(){
+  const apps=cases.filter(c=>c.status==='Appealed');
+  const b1=$('dir-app-body');
+  b1.innerHTML=apps.length?apps.map(c=>`<tr>
+    <td><span class="chip" style="font-size:10px;padding:2px 8px;">${c.trackingNo}</span></td>
+    <td><div style="font-weight:600;font-size:12px;">${c.grievantName||'[Anonymous]'}</div>
+      <div style="font-size:10px;color:var(--muted);">${c.department||'—'}</div></td>
+    <td style="font-size:11px;">${c.natureType||'—'}</td>
+    <td style="font-size:11px;">${c.appealDate||'—'}</td>
+    <td>${badge(c.status)}</td>
+    <td><button class="btn btn-a" style="padding:3px 9px;font-size:11px;"
+        onclick="openMod('${c.trackingNo}','director')">Review</button></td>
+  </tr>`).join('')
+    :`<tr><td colspan="6" class="no-rows">✅ No pending appeals.</td></tr>`;
+
+  const b2=$('dir-all-body');
+  b2.innerHTML=cases.length?cases.map(c=>`<tr onclick="openMod('${c.trackingNo}','director')">
+    <td><span class="chip" style="font-size:10px;padding:2px 8px;">${c.trackingNo}</span></td>
+    <td style="font-size:11px;">${c.submittedDate||'—'}</td>
+    <td><div style="font-weight:600;font-size:12px;">${c.grievantName||'[Anonymous]'}</div>
+      <div style="font-size:10px;color:var(--muted);">${c.department||'—'}</div></td>
+    <td style="font-size:11px;">${c.natureType||'—'}</td>
+    <td>${badge(c.status)}</td>
+    <td><button class="btn btn-s" style="padding:3px 9px;font-size:11px;"
+        onclick="event.stopPropagation();openMod('${c.trackingNo}','director')">View</button></td>
+  </tr>`).join(''):`<tr><td colspan="6" class="no-rows">No cases yet.</td></tr>`;
+}
+
+// ═══════════════════════════════════════════════════
+// CASE MODAL
+// ═══════════════════════════════════════════════════
+function openMod(trk, r){
+  const c=cases.find(x=>x.trackingNo===trk);
+  if(!c)return;
+  $('modal-ttl').textContent=`${trk} · ${c.status}`;
+
+  const info=`
+    <div class="fg" style="margin-bottom:14px;">
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);">TRACKING</div>
+        <span class="chip" style="margin-top:4px;font-size:11px;">${c.trackingNo}</span></div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);">STATUS</div>
+        <div style="margin-top:6px;">${badge(c.status)}</div></div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);">GRIEVANT</div>
+        <div style="font-size:12px;margin-top:4px;">${c.anonymous==='Yes'?'[Anonymous]':c.grievantName||'—'}</div></div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);">DEPT / POSITION</div>
+        <div style="font-size:12px;margin-top:4px;">${c.department||'—'} · ${c.position||'—'}</div></div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);">DATE SUBMITTED</div>
+        <div style="font-size:12px;margin-top:4px;">${c.submittedDate||'—'}</div></div>
+      <div><div style="font-size:10px;font-weight:700;color:var(--muted);">INCIDENT DATE</div>
+        <div style="font-size:12px;margin-top:4px;">${c.incidentDate||'—'}</div></div>
+    </div>
+    <div class="div-sec">Grievance Details</div>
+    <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;">Nature</div>
+    <div style="font-size:13px;margin-bottom:10px;">${c.natureType||'—'}</div>
+    <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;">Description</div>
+    <div style="background:var(--bg);padding:10px;border-radius:5px;font-size:12px;line-height:1.6;margin-bottom:10px;">${c.description||'—'}</div>
+    <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;">Desired Outcome</div>
+    <div style="background:var(--bg);padding:10px;border-radius:5px;font-size:12px;line-height:1.6;margin-bottom:10px;">${c.desiredOutcome||'—'}</div>
+    ${c.committeeNotes?`<div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;">Investigation Notes</div>
+    <div style="background:var(--bg);padding:10px;border-radius:5px;font-size:12px;margin-bottom:10px;">${c.committeeNotes}</div>`:''}
+    ${c.decisionLetter?`<div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;">Decision</div>
+    <div style="background:var(--green-lt);padding:10px;border-radius:5px;font-size:12px;margin-bottom:10px;">${c.decisionLetter}</div>`:''}
+    ${c.appealGrounds?`<div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;">Appeal Grounds</div>
+    <div style="background:var(--amber-lt);padding:10px;border-radius:5px;font-size:12px;margin-bottom:10px;">${c.appealGrounds}</div>`:''}
+    ${c.directorDecision?`<div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;">Director's Final Decision</div>
+    <div style="background:var(--blue-lt);padding:10px;border-radius:5px;font-size:12px;margin-bottom:10px;">${c.directorDecision}</div>`:''}
+  `;
+
+  let actions='';
+  if(r==='admin') actions=`
+    <div class="div-sec">Admin Actions</div>
+    <div class="fg fg1" style="gap:10px;">
+      <div class="fld"><label>Update Status</label>
+        <select id="m-status">
+          ${['Submitted','Acknowledged','Under Investigation','Decision Issued','Appealed','Closed']
+            .map(s=>`<option${c.status===s?' selected':''}>${s}</option>`).join('')}
+        </select></div>
+      <div class="fld"><label>Notes / Acknowledgement</label>
+        <textarea id="m-notes" rows="4">${c.committeeNotes||''}</textarea></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button class="btn btn-p" onclick="saveAdmin('${c.trackingNo}')">💾 Save</button>
+      <button class="btn btn-s" onclick="closeMod()">Cancel</button>
+    </div>`;
+
+  if(r==='committee') actions=`
+    <div class="div-sec">Investigation Record</div>
+    <div class="fg fg1" style="gap:10px;">
+      <div class="fld"><label>Status</label>
+        <select id="m-status">
+          ${['Acknowledged','Under Investigation','Decision Issued']
+            .map(s=>`<option${c.status===s?' selected':''}>${s}</option>`).join('')}
+        </select></div>
+      <div class="fld"><label>Investigation Notes (witnesses, evidence, interviews)</label>
+        <textarea id="m-notes" rows="5">${c.committeeNotes||''}</textarea></div>
+      <div class="fld"><label>Substantiation Finding</label>
+        <select id="m-sub">
+          ${['','Fully Substantiated','Partially Substantiated','Not Substantiated','Inconclusive']
+            .map(s=>`<option${c.substantiated===s?' selected':''}>${s}</option>`).join('')}
+        </select></div>
+      <div class="fld"><label>Decision / Resolution Letter Text</label>
+        <textarea id="m-dec" rows="5">${c.decisionLetter||''}</textarea></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button class="btn btn-g" onclick="saveCom('${c.trackingNo}')">💾 Save Investigation Record</button>
+      <button class="btn btn-s" onclick="closeMod()">Cancel</button>
+    </div>`;
+
+  if(r==='director') actions=`
+    <div class="div-sec">Director Review — Final Decision</div>
+    <div class="fg fg1" style="gap:10px;">
+      <div class="fld"><label>Appeal Grounds</label>
+        <textarea id="m-app" rows="4">${c.appealGrounds||''}</textarea></div>
+      <div class="fld"><label>Final Decision</label>
+        <select id="m-dir">
+          ${['','Appeal Upheld','Appeal Partially Upheld','Appeal Dismissed','Further Investigation Required']
+            .map(s=>`<option${c.directorDecision===s?' selected':''}>${s}</option>`).join('')}
+        </select></div>
+      <div class="fld"><label>Director's Notes</label>
+        <textarea id="m-notes" rows="4">${c.committeeNotes||''}</textarea></div>
+      <div class="fld"><label>Final Status</label>
+        <select id="m-status">
+          ${['Appealed','Closed'].map(s=>`<option${c.status===s?' selected':''}>${s}</option>`).join('')}
+        </select></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;">
+      <button class="btn btn-p" onclick="saveDir('${c.trackingNo}')">✅ Issue Final Decision</button>
+      <button class="btn btn-s" onclick="closeMod()">Cancel</button>
+    </div>`;
+
+  $('modal-bd').innerHTML = info + actions;
+  $('case-ov').classList.add('on');
+}
+
+function closeMod(){ $('case-ov').classList.remove('on'); }
+
+async function saveAdmin(trk){
+  await gasPost({action:'update',trackingNo:trk,
+    status:gv('m-status'), committeeNotes:gv('m-notes'),
+    lastUpdated:new Date().toISOString()});
+  closeMod(); loadCases();
+}
+
+async function saveCom(trk){
+  await gasPost({action:'update',trackingNo:trk,
+    status:gv('m-status'), committeeNotes:gv('m-notes'),
+    substantiated:gv('m-sub'), decisionLetter:gv('m-dec'),
+    decisionDate:gv('m-dec')?today():'',
+    lastUpdated:new Date().toISOString()});
+  closeMod(); loadCases();
+}
+
+async function saveDir(trk){
+  await gasPost({action:'update',trackingNo:trk,
+    appealGrounds:gv('m-app'), directorDecision:gv('m-dir'),
+    committeeNotes:gv('m-notes'), status:gv('m-status'),
+    directorDecisionDate:today(), lastUpdated:new Date().toISOString()});
+  closeMod(); loadCases();
+}
+
+// ═══════════════════════════════════════════════════
+// TAB SWITCHERS
+// ═══════════════════════════════════════════════════
+function staffTab(t,btn){
+  document.querySelectorAll('#pg-staff .tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  $('staff-sub').classList.toggle('hidden',t!=='sub');
+  $('staff-trk').classList.toggle('hidden',t!=='trk');
+}
+function adminTab(t,btn){
+  document.querySelectorAll('#pg-admin .tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  $('admin-list').classList.toggle('hidden',t!=='list');
+  $('admin-reg').classList.toggle('hidden',t!=='reg');
+  if(t==='list')loadCases();
+}
+function dirTab(t,btn){
+  document.querySelectorAll('#pg-director .tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  $('dir-app').classList.toggle('hidden',t!=='app');
+  $('dir-all').classList.toggle('hidden',t!=='all');
+}
+
+// close modals on overlay click
+$('case-ov').addEventListener('click',e=>{if(e.target===$('case-ov'))closeMod();});
+$('ok-ov').addEventListener('click',e=>{if(e.target===$('ok-ov'))closeOk();});
+</script>
+
+<!--
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ GAS BACKEND — paste into Google Apps Script
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+const SHEET_ID   = 'YOUR_GOOGLE_SHEET_ID';
+const SHEET_NAME = 'Grievances';
+
+const COLS = ['trackingNo','submittedDate','grievantName','position','department',
+  'contact','anonymous','incidentDate','natureType','personsInvolved','description',
+  'stepsTaken','desiredOutcome','status','committeeNotes','substantiated',
+  'decisionLetter','decisionDate','appealDate','appealGrounds','directorDecision',
+  'directorDecisionDate','lastUpdated'];
+
+function getSheet(){
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  let s = ss.getSheetByName(SHEET_NAME);
+  if(!s){ s = ss.insertSheet(SHEET_NAME); s.appendRow(COLS); }
+  return s;
+}
+
+function doGet(e){
+  const sheet = getSheet();
+  const action = e.parameter.action;
+
+  if(action === 'getCases'){
+    const data = sheet.getDataRange().getValues();
+    if(data.length < 2) return json([]);
+    const hdr = data[0];
+    return json(data.slice(1).map(r => {
+      const o={}; hdr.forEach((h,i)=>o[h]=r[i]); return o;
+    }));
+  }
+
+  if(action === 'getCase'){
+    const trk = e.parameter.trackingNo;
+    const data = sheet.getDataRange().getValues();
+    const hdr  = data[0];
+    const row  = data.slice(1).find(r => r[0] === trk);
+    if(!row) return json({error:'not found'});
+    const o={}; hdr.forEach((h,i)=>o[h]=row[i]); return json(o);
+  }
+
+  return json({});
+}
+
+function doPost(e){
+  const data  = JSON.parse(e.postData.contents);
+  const sheet = getSheet();
+
+  if(data.action === 'submit'){
+    sheet.appendRow(COLS.map(c => data[c]||''));
+  }
+
+  if(data.action === 'update'){
+    const all = sheet.getDataRange().getValues();
+    const hdr = all[0];
+    const idx = all.findIndex((r,i)=>i>0 && r[0]===data.trackingNo);
+    if(idx>0){
+      Object.keys(data).forEach(k=>{
+        if(k==='action')return;
+        const ci=hdr.indexOf(k);
+        if(ci>=0) sheet.getRange(idx+1,ci+1).setValue(data[k]);
+      });
+    }
+  }
+
+  return ContentService.createTextOutput('ok');
+}
+
+function json(obj){
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ DEPLOYMENT STEPS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Create Google Sheet → copy Sheet ID from URL
+2. Apps Script (script.google.com) → New project → paste GAS above
+3. Set SHEET_ID → Deploy → New deployment → Web app
+   Execute as: Me | Who has access: Anyone → Deploy (use Chrome)
+4. Copy /exec URL → replace YOUR_DEPLOYMENT_ID in HTML const GAS=...
+5. Push HTML to GitHub Pages: kcnprhospital-web.github.io/grievance/
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+-->
+</body>
+</html>
